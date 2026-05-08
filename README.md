@@ -96,6 +96,6 @@ Never work directly on the `main` branch for new features!
 
 ## 👥 The Team
 
-* **Khalid Rabee**
-* **Roaa Khairy**
+* **Khalid Rabea**
+* **Ruaa Hassan**
 * **Ibrahim Al Hafiz**
