@@ -57,6 +57,12 @@ uv sync
 
 ```
 
+### 1.2. Pull: pull the latest updates to your local machine.
+
+```bash
+git pull origin main
+```
+
 ### 🐛 2. Fixing the "Broken" Code
 
 Look for `# TODO` or `# BUG` tags in `core/selector_logic.py`.
@@ -83,8 +89,8 @@ Never work directly on the `main` branch for new features!
 
 ---
 
-### How to run a file?(e.g. `console_app.py`)
-**Simply run: `uv run console_app.py`**
+### 4. How to run a file? (e.g. `main.py`)
+**Simply run: `uv run main.py`**
 
 ---
 
@@ -104,3 +110,10 @@ Never work directly on the `main` branch for new features!
 * **Khalid Rabea**
 * **Ruaa Hassan**
 * **Ibrahim Al Hafiz**
+
+
+### 🛠️ Tasks to Assign on GitHub:
+
+1.  **Khalid Rabea:** Fix the **Button Connection**. Currently, `on_click` is `None`. They need to point it to `pick_clicked`.
+2.  **Ruaa Hassan:** Fix the **UI Update Bug**. The `result_text.value` changes in code, but the user doesn't see it because `page.update()` is missing at the end of the function.
+3.  **Ibrahim:** Fix the **Logic Flow**. They must call `selector.add_options(options_input.value)` before calling `select_items`, otherwise the list will be empty!
