@@ -83,10 +83,15 @@ Never work directly on the `main` branch for new features!
 
 ---
 
+### How to run a file?(e.g. `console_app.py`)
+**Simply run: `uv run console_app.py`**
+
+---
+
 ## 🗺️ Roadmap
 
 * ✅ 🏗️ Initial project structure
-* [ ] 🛠️ Fix broken selection logic
+* ✅ 🛠️ Fix broken selection logic
 * [ ] 📱 Build the basic Android UI
 * [ ] ⚠️ Add input validation (No empty lists!)
 * [ ] 💾 Implement "Save History" feature

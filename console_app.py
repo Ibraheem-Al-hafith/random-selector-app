@@ -23,4 +23,5 @@ def main():
         print("❌ Error: Please enter a valid number for the selection count.")
 
 if __name__ == "__main__":
-    main()
+    while True:
+        main()
