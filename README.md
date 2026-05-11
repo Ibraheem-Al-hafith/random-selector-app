@@ -33,10 +33,13 @@ This project is part of our **Graduation Project Prep**. We are transitioning fr
 
 ```bash
 random-selector-app/
-├── core/             # 🧠 Core logic (The "Brain")
-├── console_app.py    # 📟 Terminal version for testing
-├── android_app/      # 📱 UI and Android assets
-└── data/             # 📂 History and logs
+├── console_app.py          # 📟 Terminal version for testing
+├── core/                   # 🧠 Core logic (The "Brain")
+│   └── logic_selector.py
+├── data/                   # 📂 History and logs
+├── main.py                 # 📱 UI and Android assets
+├── Mobile UI Development Phase.pdf
+└── README.md
 
 ```
 
@@ -60,7 +63,9 @@ uv sync
 ### 1.2. Pull: pull the latest updates to your local machine.
 
 ```bash
-git pull origin main
+git pull origin ui
+
+uv sync
 ```
 
 ### 🐛 2. Fixing the "Broken" Code
