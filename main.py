@@ -29,7 +29,7 @@ def main(page: ft.Page):
             result_text.value = f"Error: {ex}"
 
     # BUG 3: The button is created but it's not connected to the function correctly
-    pick_button = ft.ElevatedButton("Pick Randomly", on_click=None) 
+    pick_button = ft.ElevatedButton("Pick Randomly", on_click=pick_clicked) 
 
     # Building the layout
     page.add(
