@@ -28,6 +28,8 @@ def main(page: ft.Page):
         except Exception as ex:
             result_text.value = f"Error: {ex}"
 
+            page.update()
+
     # BUG 3: The button is created but it's not connected to the function correctly
     pick_button = ft.ElevatedButton("Pick Randomly", on_click=pick_clicked) 
 
