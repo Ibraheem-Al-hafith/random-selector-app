@@ -21,6 +21,9 @@ def main(page: ft.Page):
         
         try:
             count = int(count_input.value)
+            # Add options from user input
+            selector.add_options(options_input.value)
+            
             # Connecting to backend logic
             picked = selector.select_items(count)
             result_text.value = f"Selected: {', '.join(picked)}"
