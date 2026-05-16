@@ -5,7 +5,7 @@ import os
 # Ensure 'core' folder is found by adding the root directory to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.logic_selector import RandomSelector
+from src.core.logic_selector import RandomSelector
 
 # --- Flet 0.85.0 API aliases ---
 # Icons: ft.icons.Icons.X  (ft.icons.X no longer works)

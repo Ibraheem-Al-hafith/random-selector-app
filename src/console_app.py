@@ -1,4 +1,4 @@
-from core.logic_selector import RandomSelector
+from src.core.logic_selector import RandomSelector
 
 def main():
     print("🎯 Welcome to the RandomPick Console Tester")
