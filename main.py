@@ -1,55 +1,220 @@
 import flet as ft
-from core.logic_selector import RandomSelector # HINT: Ensure path is correct!
+import sys
+import os
+
+# Ensure 'core' folder is found by adding the root directory to the path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from core.logic_selector import RandomSelector
+
+# --- Flet 0.85.0 API aliases ---
+# Icons: ft.icons.Icons.X  (ft.icons.X no longer works)
+# Colors: ft.Colors.X      (ft.colors.X no longer works, note capital C)
+# Tabs:   ft.Tabs(content=ft.Column([ft.TabBar(...), ft.TabBarView(...)]), length=N)
+# Button: ft.Button(...)   (ft.ElevatedButton deprecated since 0.80.0)
+Icons = ft.icons.Icons
+Colors = ft.Colors
+
 
 def main(page: ft.Page):
     page.title = "RandomPick Pro"
     page.theme_mode = ft.ThemeMode.DARK
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    
-    # Initialize logic
+    page.padding = 20
+    page.scroll = ft.ScrollMode.ADAPTIVE
+
     selector = RandomSelector()
-    
-    # UI Elements
-    options_input = ft.TextField(label="Enter options (comma separated)", width=400)
-    count_input = ft.TextField(label="How many to pick?", width=200, value="1")
-    result_text = ft.Text(size=30, color="cyan", weight="bold")
-    
-    def pick_clicked(e):
-        # BUG 1: They need to add the options from the input to the selector first!
-        # BUG 2: This function runs but doesn't show anything on screen... 
-        # (Hint: page.update() is missing!)
-        
+
+    # --- SHARED UI: Results Card Helper ---
+    def get_result_card(title: str, subtitle: str|None = None, icon=Icons.STAR):
+        return ft.Card(
+            content=ft.Container(
+                content=ft.ListTile(
+                    leading=ft.Icon(icon, color=Colors.CYAN),
+                    title=ft.Text(title, weight=ft.FontWeight.BOLD),
+                    subtitle=ft.Text(subtitle) if subtitle else None,
+                ),
+                padding=5,
+            )
+        )
+
+    # --- TAB 1: SIMPLE SELECTION ---
+    sel_input = ft.TextField(
+        label="Items (e.g. Apple, Orange, Banana)",
+        multiline=True,
+        min_lines=3,
+    )
+    sel_count = ft.TextField(label="Pick how many?", value="1", width=150)
+    sel_results = ft.Column(spacing=10)
+
+    def do_selection(e):
+        sel_results.controls.clear()
         try:
-            count = int(count_input.value)
-            # Add options from user input
-            selector.add_options(options_input.value)
-            
-            # Connecting to backend logic
-            picked = selector.select_items(count)
-            result_text.value = f"Selected: {', '.join(picked)}"
-            print(f"DEBUG: Picked {picked}") # This shows in console but not app
+            count = int(sel_count.value)
+            results = selector.select_items(sel_input.value, count)
+            sel_results.controls.append(
+                ft.Text("Selected Items:", size=18, weight=ft.FontWeight.BOLD)
+            )
+            for item in results:
+                sel_results.controls.append(get_result_card(item, icon=Icons.STAR))
+        except ValueError as ex:
+            sel_results.controls.append(ft.Text(f"⚠️ {ex}", color=Colors.RED_400))
         except Exception as ex:
-            result_text.value = f"Error: {ex}"
+            sel_results.controls.append(
+                ft.Text(f"⚠️ Unexpected error: {ex}", color=Colors.RED_400)
+            )
+        page.update()
 
-            page.update()
+    selection_view = ft.Container(
+        content=ft.Column(
+            controls=[
+                ft.Text(
+                    "Enter a comma-separated list and pick N random items from it.",
+                    italic=True,
+                    color=Colors.GREY_400,
+                ),
+                sel_input,
+                sel_count,
+                ft.Button(
+                    "Pick Randomly",
+                    icon=Icons.SHUFFLE,
+                    on_click=do_selection,
+                ),
+                sel_results,
+            ],
+            spacing=20,
+        ),
+        padding=20,
+    )
 
-    # BUG 3: The button is created but it's not connected to the function correctly
-    pick_button = ft.ElevatedButton("Pick Randomly", on_click=pick_clicked) 
+    # --- TAB 2: RANDOM MAPPING ---
+    map_candidates = ft.TextField(
+        label="List A — e.g. People, Teams, Slots",
+        multiline=True,
+        min_lines=3,
+    )
+    map_targets = ft.TextField(
+        label="List B — e.g. Tasks, Prizes, Roles",
+        multiline=True,
+        min_lines=3,
+    )
+    map_results = ft.Column(spacing=10)
 
-    # Building the layout
-    page.add(
-        ft.Column(
+    def do_mapping(e):
+        map_results.controls.clear()
+        try:
+            mappings, c_len, t_len = selector.assign_mappings(
+                map_candidates.value, map_targets.value
+            )
+            if c_len != t_len:
+                map_results.controls.append(
+                    ft.Text(
+                        f"Note: {c_len} items in List A, {t_len} in List B — "
+                        f"only {min(c_len, t_len)} pairs generated.",
+                        color=Colors.ORANGE_400,
+                        italic=True,
+                    )
+                )
+            map_results.controls.append(
+                ft.Text("Assignments:", size=18, weight=ft.FontWeight.BOLD)
+            )
+            for c, t in mappings:
+                map_results.controls.append(
+                    get_result_card(c, subtitle=f"→  {t}", icon=Icons.LINK)
+                )
+        except ValueError as ex:
+            map_results.controls.append(ft.Text(f"⚠️ {ex}", color=Colors.RED_400))
+        except Exception as ex:
+            map_results.controls.append(
+                ft.Text(f"⚠️ Unexpected error: {ex}", color=Colors.RED_400)
+            )
+        page.update()
+
+    mapping_view = ft.Container(
+        content=ft.Column(
+            controls=[
+                ft.Text(
+                    "Randomly pair every item in List A with an item from List B.",
+                    italic=True,
+                    color=Colors.GREY_400,
+                ),
+                map_candidates,
+                map_targets,
+                ft.Button(
+                    "Generate Mapping",
+                    icon=Icons.COMPARE_ARROWS,
+                    on_click=do_mapping,
+                ),
+                map_results,
+            ],
+            spacing=20,
+        ),
+        padding=20,
+    )
+
+    # --- TABS (Flet 0.85.0 pattern) ---
+    # Tabs is now a controller that wraps a Column of TabBar + TabBarView.
+    # Tab() only defines the header (label/icon); content lives in TabBarView.
+    tabs_container = ft.Tabs(
+        length=2,
+        selected_index=0,
+        animation_duration=300,
+        expand=True,
+        content=ft.Column(
+            expand=True,
+            controls=[
+                ft.TabBar(
+                    tabs=[
+                        ft.Tab(
+                            label="Selection",
+                            icon=Icons.ADS_CLICK,
+                        ),
+                        ft.Tab(
+                            label="Mapping",
+                            icon=Icons.COMPARE_ARROWS,
+                        ),
+                    ]
+                ),
+                ft.TabBarView(
+                    expand=True,
+                    controls=[
+                        selection_view,
+                        mapping_view,
+                    ],
+                ),
+            ],
+        ),
+    )
+
+    # --- HEADER ---
+    header = ft.Container(
+        content=ft.Column(
             [
-                ft.Text("🎯 RandomPick", size=40, weight="bold"),
-                options_input,
-                count_input,
-                pick_button,
-                result_text,
+                ft.Text(
+                    "🎯 RandomPick Pro",
+                    size=30,
+                    weight=ft.FontWeight.BOLD,
+                    text_align=ft.TextAlign.CENTER,
+                ),
+                ft.Text(
+                    "Unbiased random selection & assignment",
+                    size=14,
+                    color=Colors.GREY_400,
+                    text_align=ft.TextAlign.CENTER,
+                ),
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        )
+            spacing=4,
+        ),
+        alignment=ft.alignment.Alignment.CENTER,
+        margin=ft.margin.Margin.only(bottom=10),
+    )
+
+    page.add(
+        header,
+        ft.Divider(),
+        tabs_container,
     )
 
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    ft.run(main=main)
